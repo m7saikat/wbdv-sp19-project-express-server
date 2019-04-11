@@ -1,4 +1,4 @@
-const userModel = require('../models/user.model.server');
+const userModel = require('../models/user/user.model.server');
 
 createUser = (user) => userModel.create(user).then(user => console.log(user)).catch((e)=> e.errmsg);
 
