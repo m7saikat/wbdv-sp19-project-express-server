@@ -1,6 +1,6 @@
-const userModel = require('../models/user.model.server');
+const userModel = require('../models/user/user.model.server');
 
-createUser = (user) => userModel.create(user).then(user => console.log(user)).catch((e)=> e.errmsg);
+createUser = (user) => userModel.create(user).then(user => user).catch((e)=> e.errmsg);
 
 updateUser = (userId, user) => userModel.update({_id:userId},{$set: user}).catch((e)=> e.errmsg);
 
@@ -9,6 +9,8 @@ deleteUser = (userId) => userModel.remove({_id:userId}).catch((e)=> e.errmsg);
 findAllUsers = () => userModel.find();
 
 findUsersById = (studentId) => userModel.findById(studentId);
+
+findUsersByUsername = (username) => userModel.findOne({username: username});
 
 populateUsersSchema = () => {
 
@@ -43,5 +45,6 @@ module.exports = {
     deleteUser,
     findUsersById,
     findAllUsers,
-    populateUsersSchema
+    populateUsersSchema,
+    findUsersByUsername
 };
