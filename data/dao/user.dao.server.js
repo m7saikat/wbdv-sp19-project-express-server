@@ -10,6 +10,8 @@ findAllUsers = () => userModel.find();
 
 findUsersById = (studentId) => userModel.findById(studentId);
 
+findUsersByUsername = (username) => userModel.findOne({username: username});
+
 populateUsersSchema = () => {
 
     // Populate Users
@@ -41,5 +43,6 @@ module.exports = {
     deleteUser,
     findUsersById,
     findAllUsers,
-    populateUsersSchema
+    populateUsersSchema,
+    findUsersByUsername
 };
