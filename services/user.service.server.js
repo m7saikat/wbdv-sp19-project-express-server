@@ -58,21 +58,26 @@ module.exports = app => {
     };
 
     register = (req, res) => {
-        const user = req.body;
+       const user = req.body;
         dao.createUser(user).then(
             u =>  {
-                const data = createToken(u);
-                if (data.success === true){
-                    res.status(200).send(data)
+                if (u !== undefined) {
+                    const data = createToken(u);
+                    if (data.success === true){
+                        res.status(200).send(data)
+                    } else {
+                        res.status(403).send({
+                                                 success: false,
+                                                 message: "Registration failed. Check response"
+                                             })
+                    }
                 } else {
                     res.status(403).send({
                                              success: false,
-                                             message: "Registration failed. Check response"
+                                             message: "Username Exists"
                                          })
                 }
-
             }
-
         )
     };
 
