@@ -5,6 +5,28 @@ const jwt = require("jsonwebtoken");
 
 module.exports = app => {
 
+    createToken = (payload) => {
+        console.log("payload", payload);
+
+        let token =
+            jwt.sign({
+                userId: payload._id,
+                username: payload.username,
+                firstName: payload.firstName,
+                lastName: payload.lastName,
+                email: payload.lastName,
+                     },
+                             config.secret,
+                             {expiresIn: '3hr'}
+        );
+        //sole.log(token)
+        return ({
+            success: true,
+            message: "Authentication successful.",
+            token: token
+        })
+    };
+
     login = (req, res) => {
         const username = req.body.username;
         const password = req.body.password;
@@ -18,29 +40,40 @@ module.exports = app => {
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
-                        let token = jwt.sign({username},
-                                             config.secret,
-                                             {expiresIn: '24h'}
-                        );
-                        res.send({
-                                     success: true,
-                                     message: "Authentication successful.",
-                                     token: token
-                                 })
+                        res.send(createToken({username}))
                     } else {
-                        res.sendStatus(403).json({
+                        res.status(403).json({
                                                      success: false,
                                                      message: "Authentication failed."
                                                  })
                     }
                 } else {
-                    res.sendStatus(403).json({
+                    res.status(403).json({
                                                  success: false,
                                                  message: "Authentication failed. Please Check the request"
                                              })
                 }
             }
         );
+    };
+
+    register = (req, res) => {
+        const user = req.body;
+        dao.createUser(user).then(
+            u =>  {
+                const data = createToken(u);
+                if (data.success === true){
+                    res.status(200).send(data)
+                } else {
+                    res.status(403).send({
+                                             success: false,
+                                             message: "Registration failed. Check response"
+                                         })
+                }
+
+            }
+
+        )
     };
 
     app.post('/api/populate', (req, res) => {
@@ -76,6 +109,9 @@ module.exports = app => {
 
     //Login
     app.post('/login', login);
+
+    //Register
+    app.post('/register', register);
 
     app.get('/', middleware.verifyToken, (req, res) => {
         res.json({
