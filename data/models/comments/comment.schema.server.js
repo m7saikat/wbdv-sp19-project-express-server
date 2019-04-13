@@ -3,9 +3,7 @@ const commentSchema  = mongoose.Schema(
     { _id: Number,
         user: {type:Number, ref: 'userModel'},
         // gif: {type:Number, ref: 'gifModel'},
-       // likes: [],
-       // comments: []
-        text
+        text: String
    }, {collections: 'comments'});
 
 module.exports = commentSchema;

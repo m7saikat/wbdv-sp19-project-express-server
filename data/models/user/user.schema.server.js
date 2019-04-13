@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
                                           email: {type: String, lowercase: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
                                           image: String,
                                           password: String,
-                                          // likes: [],
+                                          likes: []
                                           // comments: []
                                       }, {collections: 'users'});
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'});
