@@ -42,7 +42,7 @@ module.exports = app => {
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
-                        res.send(createToken({username}))
+                        res.send(createToken({user}))
                     } else {
                         res.status(403).json({
                                                      success: false,
@@ -87,11 +87,11 @@ module.exports = app => {
     addLikes = (req,res) =>
         {
             const gifId = req.body.gifId;
-            const userId = req.body.userid;
-            return dao.findUsersById(userId).then(student => {
+            const userId = req.body.userId;
+             dao.findUsersById(userId).then(student => {
                 if(student){
                     student.likes.push(gifId);
-                    dao.updateUser(student.id,student).then( updatedstudent => res.json(updatedstudent) )
+                    dao.updateUser(student.id,student).then( updatedstudent => res.status(200).send(updatedstudent) )
                 }
                 else{
                     res.send(403).send({
@@ -112,6 +112,14 @@ module.exports = app => {
     app.get('/api/user', (req, res) => {
         console.log("finding users");
         dao.findAllUsers().then(users => res.send(users))
+    });
+
+    app.post('/api/user/profile', (req, res) => {
+
+        dao.findUsersByUsername(req.body.username).then(users => {
+            console.log(users);
+            res.send(users)
+        })
     });
 
     app.get('/api/user/:id', (req, res) => {
