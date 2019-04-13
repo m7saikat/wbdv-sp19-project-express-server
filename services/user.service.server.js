@@ -86,8 +86,8 @@ module.exports = app => {
 
     addLikes = (req,res) =>
         {
-            String gifId = req.body.gifId;
-            String userId = req.body.userid;
+            const gifId = req.body.gifId;
+            const userId = req.body.userid;
             return dao.findUsersById(userId).then(student => {
                 if(student){
                     student.likes.push(gifId);
