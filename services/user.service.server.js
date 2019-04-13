@@ -88,13 +88,15 @@ module.exports = app => {
         {
             const gifId = req.body.gifId;
             const userId = req.body.userId;
-             dao.findUsersById(userId).then(student => {
+
+            dao.findUsersById(userId).then(student => {
                 if(student){
-                    student.likes.push(gifId);
-                    dao.updateUser(student.id,student).then( updatedstudent => res.status(200).send(updatedstudent) )
+                    if(student.likes.indexOf(gifId) < 0)
+                        student.likes.push(gifId);
+                    dao.updateUser(student.id,student).then( updatedstudent => res.json(updatedstudent) )
                 }
                 else{
-                    res.send(403).send({
+                    res.status(403).send({
                         success: false,
                         message: "Student does not exist or has been logged out."
                     })
