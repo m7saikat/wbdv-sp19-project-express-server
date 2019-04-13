@@ -33,10 +33,11 @@ module.exports = app => {
         let userFromDb = '';
         dao.findUsersByUsername(username).then(
             user => {
-                userFromDb = user;
-                const usernameFromDB = userFromDb.username;
-                const passwordFromDB = userFromDb.password;
-                if (username && password) {
+                if (user) {
+                    userFromDb = user;
+                    const usernameFromDB = userFromDb.username;
+                    const passwordFromDB = userFromDb.password;
+
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
@@ -50,7 +51,7 @@ module.exports = app => {
                 } else {
                     res.status(403).json({
                                                  success: false,
-                                                 message: "Authentication failed. Please Check the request"
+                                                 message: "Authentication failed."
                                              })
                 }
             }
@@ -59,8 +60,9 @@ module.exports = app => {
 
     register = (req, res) => {
        const user = req.body;
+
         dao.createUser(user).then(
-            u =>  {
+            (u) =>  {
                 if (u !== undefined) {
                     const data = createToken(u);
                     if (data.success === true){
@@ -74,7 +76,7 @@ module.exports = app => {
                 } else {
                     res.status(403).send({
                                              success: false,
-                                             message: "Username Exists"
+                                             message: "Username already exists"
                                          })
                 }
             }

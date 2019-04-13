@@ -23,6 +23,6 @@ server.use((req, res, next) => {
     next();
 });
 userService(server);
-server.listen(3000);
+server.listen(4000);
 
 module.exports = server;

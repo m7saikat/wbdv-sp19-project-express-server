@@ -1,6 +1,8 @@
 const userModel = require('../models/user/user.model.server');
 
-createUser = (user) => userModel.create(user).then(user => user).catch((e)=> e.errmsg);
+createUser = (user) => userModel.create(user).then((user) => {
+    return user
+}).catch((e)=> e.errmsg);
 
 updateUser = (userId, user) => userModel.update({_id:userId},{$set: user}).catch((e)=> e.errmsg);
 
