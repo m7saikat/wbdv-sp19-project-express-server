@@ -42,9 +42,11 @@ module.exports = app => {
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
+
                         req.session['username'] = usernameFromDB;
                         req.session.cookie.maxAge = 10800000;
-                        res.send(createToken({username}));
+                        res.send(createToken({user}))
+
                     } else {
                         res.status(403).json({
                                                      success: false,
@@ -97,6 +99,7 @@ module.exports = app => {
         {
             const gifId = req.body.gifId;
             const userId = req.body.userId;
+
             dao.findUsersById(userId).then(student => {
                 if(student){
                     if(student.likes.indexOf(gifId) < 0)
@@ -124,6 +127,14 @@ module.exports = app => {
     app.get('/api/user', (req, res) => {
         console.log("finding users");
         dao.findAllUsers().then(users => res.send(users))
+    });
+
+    app.post('/api/user/profile', (req, res) => {
+
+        dao.findUsersByUsername(req.body.username).then(users => {
+            console.log(users);
+            res.send(users)
+        })
     });
 
     app.get('/api/user/:id', (req, res) => {
