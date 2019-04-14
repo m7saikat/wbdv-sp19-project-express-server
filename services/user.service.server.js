@@ -42,7 +42,9 @@ module.exports = app => {
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
-                        res.send(createToken({username}))
+                        req.session['username'] = usernameFromDB;
+                        req.session.cookie.maxAge = 10800000;
+                        res.send(createToken({username}));
                     } else {
                         res.status(403).json({
                                                      success: false,
@@ -59,6 +61,11 @@ module.exports = app => {
         );
     };
 
+    logout = (req,res) => {
+        req.session.destroy();
+        res.send(200);
+    }
+
     register = (req, res) => {
        const user = req.body;
 
@@ -67,6 +74,8 @@ module.exports = app => {
                 if (u !== undefined) {
                     const data = createToken(u);
                     if (data.success === true){
+                        req.session['username'] = user.username;
+                        req.session.cookie.maxAge = 10800000;
                         res.status(200).send(data)
                     } else {
                         res.status(403).send({
@@ -105,6 +114,8 @@ module.exports = app => {
 
     app.put('/api/like',addLikes);
 
+    app.get('/api/session/username', (req,res)=> res.send(req.session['username']));
+
     app.post('/api/populate', (req, res) => {
         res.send(dao.populateUsersSchema())
     });
@@ -138,6 +149,9 @@ module.exports = app => {
 
     //Login
     app.post('/login', login);
+
+    //Logout
+    app.post('/logout', logout);
 
     //Register
     app.post('/register', register);

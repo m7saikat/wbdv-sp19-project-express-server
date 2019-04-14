@@ -2,12 +2,19 @@ require ('./data/db')();
 const express = require('express');
 const mongoose = require('mongoose');
 const userService = require('./services/user.service.server');
+var session = require('express-session');
 const server = express();
 const bodyParser = require('body-parser');
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 
+server.use(session({
+        resave: false,
+        saveUninitialized: true,
+        secret: 'any string',
+
+    }));
 
 server.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
