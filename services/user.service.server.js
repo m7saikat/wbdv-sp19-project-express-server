@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 module.exports = app => {
 
     createToken = (payload) => {
-        console.log("payload", payload);
 
         let token =
             jwt.sign({
@@ -16,14 +15,14 @@ module.exports = app => {
                 lastName: payload.lastName,
                 email: payload.lastName,
                      },
-                             config.secret,
-                             {expiresIn: '3hr'}
+                             config.secret
         );
         //sole.log(token)
         return ({
             success: true,
             message: "Authentication successful.",
             token: token,
+            expiresIn: '3',
             user: payload
         })
     };
@@ -125,14 +124,12 @@ module.exports = app => {
 
     //User Schema CRUD operations
     app.get('/api/user', (req, res) => {
-        console.log("finding users");
         dao.findAllUsers().then(users => res.send(users))
     });
 
     app.post('/api/user/profile', (req, res) => {
 
         dao.findUsersByUsername(req.body.username).then(users => {
-            console.log(users);
             res.send(users)
         })
     });
