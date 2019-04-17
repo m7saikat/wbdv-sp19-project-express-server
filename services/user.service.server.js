@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 module.exports = app => {
 
     createToken = (payload) => {
-        console.log("payload", payload);
 
         let token =
             jwt.sign({
@@ -16,14 +15,14 @@ module.exports = app => {
                 lastName: payload.lastName,
                 email: payload.lastName,
                      },
-                             config.secret,
-                             {expiresIn: '3hr'}
+                             config.secret
         );
         //sole.log(token)
         return ({
             success: true,
             message: "Authentication successful.",
             token: token,
+            expiresIn: '3',
             user: payload
         })
     };
@@ -42,9 +41,12 @@ module.exports = app => {
                     //Check if username and password matches with the object in Database
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
+
                         req.session['username'] = usernameFromDB;
                         req.session.cookie.maxAge = 10800000;
-                        res.send(createToken({user}));
+                        
+                        res.send(createToken({user}))
+
                     } else {
                         res.status(403).json({
                                                      success: false,
@@ -97,6 +99,7 @@ module.exports = app => {
         {
             const gifId = req.body.gifId;
             const userId = req.body.userId;
+
             dao.findUsersById(userId).then(student => {
                 if(student){
                     if(student.likes.indexOf(gifId) < 0)
@@ -122,8 +125,14 @@ module.exports = app => {
 
     //User Schema CRUD operations
     app.get('/api/user', (req, res) => {
-        console.log("finding users");
         dao.findAllUsers().then(users => res.send(users))
+    });
+
+    app.post('/api/user/profile', (req, res) => {
+
+        dao.findUsersByUsername(req.body.username).then(users => {
+            res.send(users)
+        })
     });
 
     app.get('/api/user/:id', (req, res) => {
