@@ -135,24 +135,24 @@ module.exports = app => {
     });
 
     app.get('/api/user/:id', (req, res) => {
-        const studentId = req.params.id;
-        dao.findUsersById(studentId).then(student => res.send(student))
+        const userId = req.params.id;
+        dao.findUsersById(userId).then(user => res.send(user))
     });
 
     app.post('/api/user', (req, res) => {
-        const student = req.body;
-        dao.createUser(student).then(student => res.send(student))
+        const user = req.body;
+        dao.createUser(user).then(user => res.send(user))
     });
 
     app.put('/api/user/:id', (req, res) => {
-        const student = req.body;
-        const studentId = req.params.id;
-        dao.updateUser(studentId, student).then(status => res.send(status))
+        const user = req.body;
+        const userId = req.params.id;
+        dao.updateUser(userId, user).then(status => res.send(status))
     });
 
     app.delete('/api/user/:id', (req, res) => {
-        const studentId = req.params.id;
-        dao.deleteUser(studentId).then(status => res.send(status));
+        const userId = req.params.id;
+        dao.deleteUser(userId).then(status => res.send(status));
     });
 
     //Login
