@@ -18,9 +18,19 @@ module.exports = app => {
     app.get('/app/gif/', (req,res) =>{
         const gif = req.body;
         dao.createGif(gif).then(gif => res.send(gif))
-    })
+    });
 
     //Update GIF
+    app.post('/api/gif/:gifId', (req,res)=>{
+        const gifId = req.params.gifId;
+        const gif = req.body;
+        dao.updateGif(gifId,gif).then(status => res.send(status))
+    });
 
+    //Delete Gif
+    app.delete('/app/gif/:gifId', (req, res)=>{
+        const gifId = req.params.gifId;
+        dao.deleteGif(gifId)
+    })
 
 };
