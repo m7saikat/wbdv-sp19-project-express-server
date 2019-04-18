@@ -42,7 +42,7 @@ module.exports = app => {
                     if (username === usernameFromDB && password === passwordFromDB) {
                         // Create a token for the current login and send it back
 
-                        req.session['username'] = usernameFromDB;
+                        req.session['user'] = user;
                         req.session.cookie.maxAge = 10800000;
                         
                         res.send(createToken({user}))
@@ -76,7 +76,7 @@ module.exports = app => {
                 if (u !== undefined) {
                     const data = createToken(u);
                     if (data.success === true){
-                        req.session['username'] = user.username;
+                        req.session['user'] = user;
                         req.session.cookie.maxAge = 10800000;
                         res.status(200).send(data)
                     } else {
@@ -104,7 +104,17 @@ module.exports = app => {
                 if(student){
                     if(student.likes.indexOf(gifId) < 0)
                         student.likes.push(gifId);
-                    dao.updateUser(student.id,student).then( updatedstudent => res.json(updatedstudent) )
+                    dao.updateUser(student.id,student).then( updatedstudent => {
+                        if(updatedstudent.nModified >= 1){
+                            dao.findUsersById(student.id).then(updated=> {
+                                req.session['user'] = updated;
+                                res.json(updatedstudent)
+                            })
+                        }
+                        else{
+                            res.send(updatedstudent);
+                        }
+                    } )
                 }
                 else{
                     res.status(403).send({
@@ -117,7 +127,7 @@ module.exports = app => {
 
     app.put('/api/like',addLikes);
 
-    app.get('/api/session/username', (req,res)=> res.send(req.session['username']));
+    app.get('/api/session/user', (req,res)=> res.send(req.session['user']));
 
     app.post('/api/populate', (req, res) => {
         res.send(dao.populateUsersSchema())
@@ -128,18 +138,14 @@ module.exports = app => {
         dao.findAllUsers().then(users => res.send(users))
     });
 
-    app.post('/api/user/profile', (req, res) => {
-
-        dao.findUsersByUsername(req.body.username).then(users => {
-            res.send(users)
-        })
-    });
+    app.get('/api/user/profile', (req, res) => res.send(req.session['user']));
 
     app.get('/api/user/:id', (req, res) => {
         const userId = req.params.id;
         dao.findUsersById(userId).then(user => res.send(user))
     });
 
+    //for creating users for admin
     app.post('/api/user', (req, res) => {
         const user = req.body;
         dao.createUser(user).then(user => res.send(user))
@@ -148,7 +154,17 @@ module.exports = app => {
     app.put('/api/user/:id', (req, res) => {
         const user = req.body;
         const userId = req.params.id;
-        dao.updateUser(userId, user).then(status => res.send(status))
+        dao.updateUser(userId, user).then(status => {
+            if(status.nModified >= 1){
+                dao.findUsersById(userId).then(updated=> {
+                    req.session['user'] = updated;
+                    res.send(status);
+                })
+            }
+            else{
+                res.send(status);
+            }
+        })
     });
 
     app.delete('/api/user/:id', (req, res) => {
