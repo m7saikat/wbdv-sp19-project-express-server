@@ -2,6 +2,7 @@ require ('./data/db')();
 const express = require('express');
 const mongoose = require('mongoose');
 const userService = require('./services/user.service.server');
+const gifService = require('./services/gif.service.server');
 var session = require('express-session');
 const server = express();
 const bodyParser = require('body-parser');
@@ -30,6 +31,7 @@ server.use((req, res, next) => {
     next();
 });
 userService(server);
+gifService(server);
 server.listen(4000);
 
 module.exports = server;

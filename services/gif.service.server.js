@@ -9,28 +9,29 @@ module.exports = app => {
     app.get('/api/gif',(req, res) => dao.findAllGif().then(gifs => res.send(gifs)))
 
     //find GIF by ID
-    app.get('/app/gif/:id', (req, res) => {
+    app.get('/api/gif/:id', (req, res) => {
         const gifId = req.params.id;
         dao.findGifById(gifId).then(gif => res.send(gif))
     });
 
     //create GIF
-    app.get('/app/gif/', (req,res) =>{
+    app.post('/api/gif', (req,res) =>{
         const gif = req.body;
         dao.createGif(gif).then(gif => res.send(gif))
     });
 
     //Update GIF
-    app.post('/api/gif/:gifId', (req,res)=>{
+    app.put('/api/gif/:gifId', (req,res)=>{
         const gifId = req.params.gifId;
         const gif = req.body;
         dao.updateGif(gifId,gif).then(status => res.send(status))
     });
 
     //Delete Gif
-    app.delete('/app/gif/:gifId', (req, res)=>{
+    app.delete('/api/gif/:gifId', (req, res)=>{
         const gifId = req.params.gifId;
-        dao.deleteGif(gifId)
+        dao.deleteGif(gifId).then(status => res.send(status))
+
     })
 
 };

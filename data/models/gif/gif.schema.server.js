@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const gifSchema  = mongoose.Schema(
-    { _id: Number,
-        gifURl: String,
+    {   gifURl: String,
         gifTitle: String,
         likedByUsers: {type:Array, default:[], ref: 'UserModel'}
     }, {collections: 'gif'});

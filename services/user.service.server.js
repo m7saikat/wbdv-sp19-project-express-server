@@ -1,5 +1,6 @@
 const config = require('../middleware/config');
 const dao = require('../data/dao/user.dao.server');
+const gifdao = require('../data/dao/gif.dao.server');
 let middleware = require('../middleware/middleware');
 const jwt = require("jsonwebtoken");
 
@@ -102,6 +103,12 @@ module.exports = app => {
 
             dao.findUsersById(userId).then(student => {
                 if(student){
+                    gifdao.findGifById(gifId).then(gif => {
+                        if(gif.likedByUsers.indexOf(student.id) < 0 ){
+                            gif.likedByUsers.push(student.id);
+                            gifdao.updateGif(gifId, gif)
+                        }
+                    })
                     if(student.likes.indexOf(gifId) < 0)
                         student.likes.push(gifId);
                     dao.updateUser(student.id,student).then( updatedstudent => {
