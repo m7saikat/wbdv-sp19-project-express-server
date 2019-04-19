@@ -126,13 +126,66 @@ module.exports = app => {
                 else{
                     res.status(403).send({
                         success: false,
-                        message: "Student does not exist or has been logged out."
+                        message: "User does not exist or has been logged out."
                     })
                 }
             } )
         }
 
+        addFollowers = (req,res) =>
+        {
+            const userId = req.session.user._id;
+            const followerId = req.body.followId;
+
+            dao.findUsersById(userId).then(user => {
+                if(user){
+                    if(user.followers.indexOf(followerId)<0){
+                        user.followers.push(followerId)
+                        dao.updateUser(user.id, user).then(updatedUser => {
+                            if(updatedUser.nModified >= 1){
+                                    req.session['user'] = user;
+                            }
+                                res.send(updatedUser);
+                        })
+                    }
+                }
+                else{
+                    res.status(403).send({
+                        success: false,
+                        message: "User does not exist or has been logged out."
+                    })
+                }
+            })
+        }
+
+        unfollow = (req,res) => {
+            const userId = req.session.user._id;
+            const followerId = req.body.unfollowId;
+
+            dao.findUsersById(userId).then(user => {
+                if(user){
+                    if(user.followers.indexOf(followerId)>=0){
+                        user.followers = user.followers.filter(update => update!==followerId);
+                        dao.updateUser(user.id, user).then(updatedUser => {
+                            if(updatedUser.nModified >= 1){
+                                req.session['user'] = user;
+                            }
+                            res.send(updatedUser);
+                        })
+                    }
+                }
+                else{
+                    res.status(403).send({
+                        success: false,
+                        message: "User does not exist or has been logged out."
+                    })
+                }
+            })
+        };
+
     app.put('/api/like',addLikes);
+    app.put('/api/follow', addFollowers);
+    app.put('/api/unfollow', unfollow);
 
     app.get('/api/session/user', (req,res)=> res.send(req.session['user']));
 
