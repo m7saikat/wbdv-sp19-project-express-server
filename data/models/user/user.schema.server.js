@@ -8,7 +8,10 @@ const userSchema = mongoose.Schema({
                                           image: String,
                                           password: String,
                                           likes: [],
-                                          followers: []
+                                          followers: [],
+                                          role: { type:String,
+                                                   enum:['ADMIN', 'COMMONUSER','CONTENTCREATOR'],
+                                                    default: 'COMMONUSER'}
                                           // comments: []
                                       }, {collections: 'users'});
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'});

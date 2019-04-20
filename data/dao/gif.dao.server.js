@@ -26,12 +26,15 @@ findGifTitle = (gifId) => gifModel.find({_id: gifId}, {gifTitle: 1});
 
 findGifURl = (gifId) => gifModel.findById({_id: gifId}, {gifUrl: 1});
 
+findCreator = (gifId) => gifModel.find({_id:gifId}, {createdBy: 1});
+
 module.exports = {
     createGif,
     updateGif,
     deleteGif,
     findAllGif,
     findGifById,
+    findCreator,
     findGifTitle,
     findGifURl
 };
