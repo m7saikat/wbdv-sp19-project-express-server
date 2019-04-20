@@ -17,7 +17,16 @@ module.exports = app => {
     //create GIF
     app.post('/api/gif', (req,res) =>{
         const gif = req.body;
-        dao.createGif(gif).then(gif => res.send(gif))
+        if(req.session.user.role === 'CONTENTCREATOR' || req.session.user.role === 'ADMIN') {
+            gif.createdBy = req.session.user._id;
+            dao.createGif(gif).then(gif => res.send(gif))
+        }
+        else {
+            res.status(403).send({
+                success: false,
+                message: "Only content creators can create gifs."
+            })
+        }
     });
 
     //Update GIF
@@ -30,8 +39,19 @@ module.exports = app => {
     //Delete Gif
     app.delete('/api/gif/:gifId', (req, res)=>{
         const gifId = req.params.gifId;
-        dao.deleteGif(gifId).then(status => res.send(status))
-
+        var createdById = '';
+        dao.findGifById(gifId).then(result => {
+            createdById = result.createdBy;
+            if( createdById.toString() === req.session.user._id.toString() || (req.session.user.role === 'ADMIN')) {
+                dao.deleteGif(gifId).then(status => res.send(status));
+            }
+            else {
+                res.status(403).send({
+                    success: false,
+                    message: "You can only delete your own gifs.."
+                })
+            }
+        });
     })
 
 };
