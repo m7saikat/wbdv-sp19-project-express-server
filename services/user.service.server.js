@@ -44,7 +44,7 @@ module.exports = app => {
                         // Create a token for the current login and send it back
 
                         req.session['user'] = user;
-                        req.session.cookie.maxAge = 10800000;
+                        req.session.cookie. maxAge = 10800000;
                         
                         res.send(createToken({user}))
 
@@ -56,7 +56,7 @@ module.exports = app => {
                     }
                 } else {
                     res.status(403).json({
-                                                 success: false,
+                                                   success: false,
                                                  message: "Authentication failed."
                                              })
                 }
