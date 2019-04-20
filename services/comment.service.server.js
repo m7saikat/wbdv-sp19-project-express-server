@@ -7,7 +7,7 @@ module.exports = app => {
 
     // Get comment by user and gif
     app.get('/api/comment/:gifId',(req,res)=>{
-        const gifId = req.params.gidId;
+        const gifId = req.params.gifId;
         const userId = req.session.user._id;
         if (userId) {
             dao.findCommentByUserAndGif(gifId,userId).then(comment => {
@@ -28,10 +28,18 @@ module.exports = app => {
         }
     });
 
-    //Get all comments for a GIF for a user
+    //Get all comments for a user
     app.get('/api/user/comment', (req,res) => {
-        const userId = req.body.userId;
+        const userId = req.params.userId;
         dao.findCommentByUser(userId).then(
+            comments => res.send(comments)
+        )
+    });
+
+    //Get all comments for a GIF
+    app.get('/api/gif/comment/:gifId', (req,res) => {
+        const gifId = req.params.gifId;
+        dao.findCommentByGif(gifId).then(
             comments => res.send(comments)
         )
     });
@@ -41,6 +49,7 @@ module.exports = app => {
         const userId = req.session.user._id;
         const gifId = req.body.gifId;
         const comment = req.body.comment;
+
         dao.addComment(gifId,userId,comment).then(
             comment => res.send(comment)
         )

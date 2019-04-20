@@ -5,11 +5,11 @@ findCommentByUser = (userId) => {
 };
 
 findCommentByGif = (gifId) => {
-    return commentModel.find({createdByuser: gifId})
+    return commentModel.find({gif: gifId})
 };
 
 findCommentByUserAndGif = (gifId, userId) => {
-  return commentModel.find({createdByuser: userId, gif: gifId}).catch(e=> e.errmsg)
+    return commentModel.find({createdByuser: userId, gif: gifId})
 };
 
 findAllComments = () => {
@@ -25,9 +25,14 @@ editComment = (commentId, comment) => {
 };
 
 addComment = (gifId, userId, comment) => {
-    comment.gif = gifId;
-    comment.createdByuser = userId;
-    return commentModel.create(comment)
+    // comment.gif = gifId;
+    // comment.createdByuser = userId;
+    // comment.text = comment;
+    return commentModel.create({
+        gif: gifId,
+        createdByuser: userId,
+        text: comment
+    })
 };
 
 module.exports = {
