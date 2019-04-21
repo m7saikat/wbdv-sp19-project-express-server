@@ -10,7 +10,7 @@ deleteGif = (gifId) => gifModel.remove({_id: gifId})
     .then(status => {
         userModel.find({likes: gifId})
             .then(likedUsers => likedUsers.map(user => {
-                user.likes = user.likes.filter(value => value !== gifId);
+                user.likes = user.likes.filter(value =>  value !== gifId);
                 userdao.updateUser(user.id, user);
                 return status;
             }))

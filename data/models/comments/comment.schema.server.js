@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const commentSchema  = mongoose.Schema(
-    { _id: Number,
-        user: {type:Number, ref: 'userModel'},
-        // gif: {type:Number, ref: 'gifModel'},
+    {
+        createdByuser: {type:mongoose.Schema.Types.ObjectId, ref: 'userModel'},
+        // gif: {type:mongoose.Schema.Types.ObjectId, ref: 'gifModel'},
+        gif: String,
         text: String
    }, {collections: 'comments'});
 
