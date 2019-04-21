@@ -14,6 +14,8 @@ findUsersById = (studentId) => userModel.findById(studentId);
 
 findUsersByUsername = (username) => userModel.findOne({username: username});
 
+findUserByEmail = (useremail) => userModel.findOne({email: useremail});
+
 populateUsersSchema = () => {
 
     // Populate Users

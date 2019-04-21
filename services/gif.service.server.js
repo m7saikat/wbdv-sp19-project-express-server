@@ -24,7 +24,7 @@ module.exports = app => {
         else {
             res.status(403).send({
                 success: false,
-                message: "Only content creators can create gifs."
+                message: "Only content creators or admins can create gifs."
             })
         }
     });
@@ -33,7 +33,19 @@ module.exports = app => {
     app.put('/api/gif/:gifId', (req,res)=>{
         const gifId = req.params.gifId;
         const gif = req.body;
-        dao.updateGif(gifId,gif).then(status => res.send(status))
+        var createdBy = '';
+        dao.findGifById(gifId).then(result => {
+            createdBy = result.createdBy;
+            if((req.session.user.role === 'CONTENTCREATOR' && req.session.user._id === createdBy) || req.session.user.role === 'ADMIN') {
+                dao.updateGif(gifId,gif).then(status => res.send(status))
+            }
+            else {
+                res.status(403).send({
+                    success: false,
+                    message: "Only content creators or admins can update gifs."
+                })
+            }
+        })
     });
 
     //Delete Gif

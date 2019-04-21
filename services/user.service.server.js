@@ -70,8 +70,10 @@ module.exports = app => {
     }
 
     register = (req, res) => {
-       const user = req.body;
-
+       let user = req.body;
+       if(user.username === 'admin' && user.password === 'admin'){
+           user.role = 'ADMIN';
+       }
         dao.createUser(user).then(
             (u) =>  {
                 if (u !== undefined) {
@@ -229,7 +231,14 @@ module.exports = app => {
 
     app.delete('/api/user/:id', (req, res) => {
         const userId = req.params.id;
-        dao.deleteUser(userId).then(status => res.send(status));
+        if(req.session.user.role === 'ADMIN'){
+            dao.deleteUser(userId).then(status => res.send(status));
+        } else {
+            res.status(403).send({
+                success: false,
+                message: "Only Admin can delete users."
+            })
+        }
     });
 
     //Login
@@ -247,4 +256,4 @@ module.exports = app => {
                      message: 'Index page'
                  });
     })
-};
+} ;
