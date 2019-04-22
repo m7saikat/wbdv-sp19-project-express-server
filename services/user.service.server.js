@@ -271,7 +271,7 @@ module.exports = app => {
             if(user_email) {
                 dao.findUserByEmail(user_email).then(user=>{
                     if(user){
-                        res.session['user'] = user;
+                        req.session['user'] = user;
                         let token = createToken({user});
                         res.cookie('token', token.token,{expires: new Date(Date.now() + 900000)});
                         res.cookie('username', token.user.user.username,{ expires: new Date(Date.now() + 900000)});
@@ -295,7 +295,7 @@ module.exports = app => {
                      dao.createUser(create_new_user).then(result => {
                          if(result !== undefined){
                              console.log("result ", result)
-                             res.session['user'] = result.user;
+                             req.session['user'] = result.user;
                              res.cookie('token', result.token,{expires: new Date(Date.now() + 900000)});
                              res.cookie('username', result.user.username,{ expires: new Date(Date.now() + 900000)});
                              res.cookie('userId', result.user._id.toString(), {expires: new Date(Date.now() + 900000)});
