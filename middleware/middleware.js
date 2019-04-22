@@ -24,7 +24,6 @@ verifyToken =(req, res, next) => {
                 }
             } )
         }
-
     } else {
         // res.status(403).send("Failed, token not provided.")
         return res.json({

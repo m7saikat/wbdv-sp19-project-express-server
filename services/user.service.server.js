@@ -3,8 +3,10 @@ const dao = require('../data/dao/user.dao.server');
 const gifdao = require('../data/dao/gif.dao.server');
 let middleware = require('../middleware/middleware');
 const jwt = require("jsonwebtoken");
-
+const request = require('request');
+var store = require('store');
 module.exports = app => {
+
 
     createToken = (payload) => {
 
@@ -241,8 +243,90 @@ module.exports = app => {
         }
     });
 
+    googleLogin = (req,res) => {
+        let code = req.query.code;
+        console.log(req);
+        console.log("User received at backend", req.query.code);
+
+        let request = require("request");
+
+        let options = { method: 'POST',
+            url: 'https://accounts.google.com/o/oauth2/token',
+            headers:
+                { 'Postman-Token': 'f6a1095a-7d4b-4a26-91db-77a49546c80a',
+                    'cache-control': 'no-cache',
+                    'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
+            formData:
+                { grant_type: 'authorization_code',
+                    code: code,
+                    client_id: '950601830079-k48proe2ml618ce918k5it6uo15ib0dq.apps.googleusercontent.com',
+                    client_secret: 'cZywwZqggJqkkostSHxMUSXs',
+                    redirect_uri: 'http://localhost:4000/login/google' } };
+
+        request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+            let decoded_token = jwt.decode(JSON.parse(body).id_token);
+            console.log("Body> ", body);
+            let user_email = decoded_token.email;
+            if(user_email) {
+                dao.findUserByEmail(user_email).then(user=>{
+                    if(user){
+                        res.session['user'] = user;
+                        let token = createToken({user});
+                        res.cookie('token', token.token,{expires: new Date(Date.now() + 900000)});
+                        res.cookie('username', token.user.user.username,{ expires: new Date(Date.now() + 900000)});
+                        let userId = token.user.user._id.toString();
+                        // const expiresIn = moment().add(token.expiresIn, 'hours');
+                        // res.store('expiresIn',expiresIn)
+                        res.cookie('userId', userId, {expires: new Date(Date.now() + 900000)});
+                        res.redirect("http://localhost:4200/home")
+
+                    }
+                    else {
+                     let create_new_user = {
+                         "firstName": user_email,
+                         "lastName": user_email,
+                         "username": user_email,
+                         "email": user_email,
+                         "image": "",
+                         "password": Math.random().toString(36).substring(2, 15),
+                         "likes": []
+                     }
+                     dao.createUser(create_new_user).then(result => {
+                         if(result !== undefined){
+                             console.log("result ", result)
+                             res.session['user'] = result.user;
+                             res.cookie('token', result.token,{expires: new Date(Date.now() + 900000)});
+                             res.cookie('username', result.user.username,{ expires: new Date(Date.now() + 900000)});
+                             res.cookie('userId', result.user._id.toString(), {expires: new Date(Date.now() + 900000)});
+                             res.redirect("http://localhost:4200/home");
+                         }
+                         else {
+                             res.status(403).json({
+                                 success: false,
+                                 message: "You are not logged into our database, and unable to create user, please register."
+                             })
+                         }
+                     })
+                    }
+                })
+            }
+            else {
+
+                res.status(403).json({
+                    success: false,
+                    message: "Social Authentication failed."
+                })
+            }
+
+            // console.log("access token ", user_email);
+        });
+
+    }
     //Login
     app.post('/login', login);
+
+    app.get('/login/google', googleLogin);
 
     //Logout
     app.post('/logout', logout);

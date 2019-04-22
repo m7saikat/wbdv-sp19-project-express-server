@@ -50,5 +50,6 @@ module.exports = {
     findUsersById,
     findAllUsers,
     populateUsersSchema,
-    findUsersByUsername
+    findUsersByUsername,
+    findUserByEmail
 };
