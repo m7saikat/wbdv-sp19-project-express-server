@@ -190,13 +190,20 @@ module.exports = app => {
     removeLike = (req,res) => {
         var userId = req.body.userId;
         var like_to_remove = req.body.gifUrl;
+        console.log('***', userId);
+        console.log('&&', like_to_remove);
         dao.findUsersById(userId).then(user => {
+
             if(user){
+                console.log(user.likes);
                 if(user.likes.indexOf(like_to_remove)>=0){
+                    console.log('Here');
                     user.likes = user.likes.filter(update => update!==like_to_remove);
-                    dao.updateUser(user.id, user).then(updatedUser => {
+                    dao.updateUser(user._id, user).then(updatedUser => {
+                        console.log('After update');
                         if(updatedUser.nModified >= 1){
                             req.session['user'] = user;
+                            console.log(user);
                         }
                         res.send(updatedUser);
                     })
