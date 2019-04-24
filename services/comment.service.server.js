@@ -29,19 +29,33 @@ module.exports = app => {
     });
 
     //Get all comments for a user
-    app.get('/api/user/comment', (req,res) => {
-        const userId = req.params.userId;
-        dao.findCommentByUser(userId).then(
-            comments => res.send(comments)
-        )
+    app.get('/api/comment', (req,res) => {
+        if(req.session.user){
+            const userId = req.session.user._id;
+            dao.findCommentByUser(userId).then(
+                comments => res.send(comments)
+            )
+        }
+        else{
+            res.status(404).send({
+                success: false,
+                message: "Please login first."
+            })
+        }
+
     });
 
     //Get all comments for a GIF
-    app.get('/api/gif/comment/:gifId', (req,res) => {
+    app.get('/api/gif/:gifId/comment', (req,res) => {
         const gifId = req.params.gifId;
         dao.findCommentByGif(gifId).then(
             comments => res.send(comments)
         )
+    });
+
+    //get all comments
+    app.get('/api/comments', (req,res) => {
+        dao.findAllComments().then(results => res.send(results))
     });
 
     //Add comment
@@ -57,20 +71,62 @@ module.exports = app => {
 
     //Edit comment
     app.put('/api/comment/', (req, res) => {
-        const userId = req.session.user._id;
-        const comment = req.body;
-        commentId = comment.commentId;
+        const userId = req.session.user._id.toString();
+        const comment = req.body.comment;
+        const commentId = req.body.commentId;
         gifId = comment.gifId;
-        if (userId === comment.createdByuser) {
-            dao.editComment(commentId, comment).then(
-                status => {
-                    if (status.nModified >=1 ) {
-                        dao.findCommentByUserAndGif(gifId,userId).then(
-                            comment => res.send(comment)
-                        )
-                    }
+        dao.findCommentBYId(commentId).then(commentResult => {
+            if(commentResult){
+                if((userId === commentResult.createdByuser.toString())|| (req.session.user.role === 'ADMIN')) {
+                    dao.editComment(commentId, comment).then(
+                        status => {
+                            if (status.nModified >=1 ) {
+                                dao.findCommentByUserAndGif(gifId,userId).then(
+                                    comment => res.send(comment)
+                                )
+                            }
+                            else{
+                                res.status(404).send({
+                                    success: false,
+                                    message: "Edit failed, please try again."
+                                })
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
+            else {
+                res.status(404).send({
+                    success: false,
+                    message: "No comment exists with the given Id"
+                })
+            }
+        })
+    });
+
+    //Delete Comment
+    app.del('/api/comment', (req,res)=> {
+        const commentId = req.body.commentId;
+        const userId = req.session.user._id;
+
+        dao.findCommentBYId(commentId).then(comment => {
+            if(comment){
+                if((comment.createdByuser.toString() === userId.toString())|| (req.session.user.role === 'ADMIN')){
+                    dao.deleteComment(commentId).then(result => res.send(result));
+                }
+                else{
+                    res.status(404).send({
+                        success: false,
+                        message: "You can only delete your comment."
+                    })
+                }
+            }
+            else {
+                res.status(404).send({
+                    success: false,
+                    message: "No comment found for the given Id."
+                })
+            }
+        })
     })
 };

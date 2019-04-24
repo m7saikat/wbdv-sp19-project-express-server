@@ -1,6 +1,8 @@
 const commentModel = require('../models/comments/comments.model.server');
 
 findCommentByUser = (userId) => {
+    console.log(typeof userId)
+    console.log(userId)
     return commentModel.find({createdByuser: userId})
 };
 
@@ -16,13 +18,18 @@ findAllComments = () => {
     return commentModel.find()
 };
 
+findCommentBYId = (commentId) => commentModel.findById(commentId);
+
+
 deleteComment = (commentId) => {
   return commentModel.deleteOne()
 };
 
 editComment = (commentId, comment) => {
-    commentModel.updateOne({_id: commentId}, {$set:{text: comment.text}})
+    return commentModel.updateOne({_id: commentId}, {$set:{text: comment.text}})
 };
+
+findAllComments = () => commentModel.find();
 
 addComment = (gifId, userId, comment) => {
     // comment.gif = gifId;
@@ -41,5 +48,7 @@ module.exports = {
     findCommentByUserAndGif,
     deleteComment,
     addComment,
-    editComment
+    editComment,
+    findCommentBYId,
+    findAllComments
 };
