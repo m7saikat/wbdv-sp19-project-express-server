@@ -48,7 +48,7 @@ module.exports = app => {
                         req.session['user'] = user;
                         req.session.cookie. maxAge = 10800000;
                         
-                        res.send(createToken({user}))
+                        res.status(200).send(createToken(user))
 
                     } else {
                         res.status(403).json({
