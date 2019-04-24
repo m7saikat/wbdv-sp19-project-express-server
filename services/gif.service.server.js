@@ -28,6 +28,23 @@ module.exports = app => {
         }
     });
 
+    //find gifs created by a user
+    app.get('/api/created/:id', (req,res)=> {
+        const userId = req.params.id;
+        dao.findMyGifs(userId).then( result => {
+            if(result){
+                res.send(result);
+            }
+            else{
+                res.status(403).send({
+                    success: false,
+                    message: "the provided user either does not exist or has not created any gifs"
+                })
+            }
+        })
+
+    })
+
     //create GIF
     app.post('/api/gif', (req,res) =>{
         const gif = req.body;
