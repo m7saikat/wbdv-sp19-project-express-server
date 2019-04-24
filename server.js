@@ -19,7 +19,7 @@ server.use(session({
     }));
 
 server.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+    res.setHeader("Access-Control-Allow-Origin", "https://wbdv-sp19-gif-art-client.herokuapp.com");
     res.setHeader(
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
