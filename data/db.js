@@ -5,9 +5,9 @@ module.exports = function () {
         'mongodb://localhost/';
     connectionString += databaseName;
     // const localURL = 'mongodb://localhost/white-board';
-    const herokuURL = 'mongodb://heroku_p18m8zl6:bjgu39l8hbiptobvevpcgiu62d@ds145916.mlab.com:45916/heroku_p18m8zl6';
+    // const herokuURL = 'mongodb://heroku_p18m8zl6:bjgu39l8hbiptobvevpcgiu62d@ds145916.mlab.com:45916/heroku_p18m8zl6';
     mongoose
-        .connect(herokuURL, { autoIndex: false })
+        .connect(connectionString, { autoIndex: false })
         .then(() => {
             console.log("Connected to database");
         }).catch(() => {
