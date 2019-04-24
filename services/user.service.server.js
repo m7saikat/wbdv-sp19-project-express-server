@@ -187,7 +187,31 @@ module.exports = app => {
             })
         };
 
+    removeLike = (req,res) => {
+        var userId = req.body.userId;
+        var like_to_remove = req.body.gifUrl;
+        dao.findUsersById(userId).then(user => {
+            if(user){
+                if(user.likes.indexOf(like_to_remove)>=0){
+                    user.likes = user.likes.filter(update => update!==like_to_remove);
+                    dao.updateUser(user.id, user).then(updatedUser => {
+                        if(updatedUser.nModified >= 1){
+                            req.session['user'] = user;
+                        }
+                        res.send(updatedUser);
+                    })
+                }
+            }
+            else{
+                res.status(403).send({
+                    success: false,
+                    message: "User does not exist or has been logged out."
+                })
+            }
+        })
+    }
     app.put('/api/like',addLikes);
+    app.put('/api/unlike', removeLike);
     app.put('/api/follow', addFollowers);
     app.put('/api/unfollow', unfollow);
 
