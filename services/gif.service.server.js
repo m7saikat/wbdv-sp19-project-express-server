@@ -14,6 +14,13 @@ module.exports = app => {
         dao.findGifById(gifId).then(gif => res.send(gif))
     });
 
+    //find gifs created
+    app.get('/api/created', (req,res)=> {
+        const userId = req.session.user._id;
+        dao.findMyGifs(userId).then(result => res.send(result));
+
+    });
+
     //create GIF
     app.post('/api/gif', (req,res) =>{
         const gif = req.body;
@@ -54,16 +61,16 @@ module.exports = app => {
         var createdById = '';
         dao.findGifById(gifId).then(result => {
             createdById = result.createdBy;
-            if( createdById.toString() === req.session.user._id.toString() || (req.session.user.role === 'ADMIN')) {
+            // if( createdById.toString() === req.session.user._id.toString() || (req.session.user.role === 'ADMIN')) {
                 dao.deleteGif(gifId).then(status => res.send(status));
-            }
-            else {
-                res.status(403).send({
-                    success: false,
-                    message: "You can only delete your own gifs.."
-                })
-            }
+            // }
+            // else {
+            //     res.status(403).send({
+            //         success: false,
+            //         message: "You can only delete your own gifs.."
+            //     })
+            // }
         });
-    })
+    });
 
 };

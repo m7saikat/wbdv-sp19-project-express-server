@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const giftSchema = require('./gif.schema.server');
-const gifModel = mongoose.model('gifModel', giftSchema);
+const gifSchema = require('./gif.schema.server');
+const gifModel = mongoose.model('gifModel', gifSchema);
 
 module.exports = gifModel;

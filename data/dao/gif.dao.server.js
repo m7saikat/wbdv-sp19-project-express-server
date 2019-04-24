@@ -1,6 +1,7 @@
 const gifModel = require('../models/gif/gif.model.server');
 const userModel = require('../models/user/user.model.server');
 const userdao = require('./user.dao.server');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 createGif = (gif) => gifModel.create(gif).catch(e => e.errmsg);
 
@@ -28,12 +29,15 @@ findGifURl = (gifId) => gifModel.findById({_id: gifId}, {gifUrl: 1});
 
 findCreator = (gifId) => gifModel.find({_id:gifId}, {createdBy: 1});
 
+findMyGifs = (userId) => gifModel.find({createdBy: userId}, {gifURl:1, _id:0});
+
 module.exports = {
     createGif,
     updateGif,
     deleteGif,
     findAllGif,
     findGifById,
+    findMyGifs,
     findCreator,
     findGifTitle,
     findGifURl
