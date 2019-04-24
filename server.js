@@ -34,6 +34,6 @@ server.use((req, res, next) => {
 userService(server);
 gifService(server);
 commentService(server);
-server.listen(process.ENV.PORT || 4000);
+server.listen(process.env.PORT || 4000);
 
 module.exports = server;
