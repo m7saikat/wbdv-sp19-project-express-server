@@ -17,8 +17,15 @@ module.exports = app => {
     //find gifs created
     app.get('/api/created', (req,res)=> {
         const userId = req.session.user._id;
-        dao.findMyGifs(userId).then(result => res.send(result));
-
+        if(userId){
+            dao.findMyGifs(userId).then(result => res.send(result));
+        }
+        else{
+            res.status(403).send({
+                success: false,
+                message: "You are not a user or have been logged out."
+            })
+        }
     });
 
     //create GIF
