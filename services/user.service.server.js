@@ -190,20 +190,14 @@ module.exports = app => {
     removeLike = (req,res) => {
         var userId = req.body.userId;
         var like_to_remove = req.body.gifUrl;
-        console.log('***', userId);
-        console.log('&&', like_to_remove);
         dao.findUsersById(userId).then(user => {
 
             if(user){
-                console.log(user.likes);
                 if(user.likes.indexOf(like_to_remove)>=0){
-                    console.log('Here');
                     user.likes = user.likes.filter(update => update!==like_to_remove);
                     dao.updateUser(user._id, user).then(updatedUser => {
-                        console.log('After update');
                         if(updatedUser.nModified >= 1){
                             req.session['user'] = user;
-                            console.log(user);
                         }
                         res.send(updatedUser);
                     })
@@ -276,9 +270,6 @@ module.exports = app => {
 
     googleLogin = (req,res) => {
         let code = req.query.code;
-        console.log(req);
-        console.log("User received at backend", req.query.code);
-
         let request = require("request");
 
         let options = { method: 'POST',
@@ -297,7 +288,6 @@ module.exports = app => {
         request(options, function (error, response, body) {
             if (error) throw new Error(error);
             let decoded_token = jwt.decode(JSON.parse(body).id_token);
-            console.log("Body> ", body);
             let user_email = decoded_token.email;
             if(user_email) {
                 dao.findUserByEmail(user_email).then(user=>{
@@ -325,7 +315,6 @@ module.exports = app => {
                      }
                      dao.createUser(create_new_user).then(result => {
                          if(result !== undefined){
-                             console.log("result ", result)
                              req.session['user'] = result.user;
                              res.cookie('token', result.token,{expires: new Date(Date.now() + 900000)});
                              res.cookie('username', result.user.username,{ expires: new Date(Date.now() + 900000)});
@@ -349,8 +338,6 @@ module.exports = app => {
                     message: "Social Authentication failed."
                 })
             }
-
-            // console.log("access token ", user_email);
         });
 
     }

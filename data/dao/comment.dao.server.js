@@ -1,10 +1,6 @@
 const commentModel = require('../models/comments/comments.model.server');
 
-findCommentByUser = (userId) => {
-    console.log(typeof userId)
-    console.log(userId)
-    return commentModel.find({createdByuser: userId})
-};
+findCommentByUser = (userId) => commentModel.find({createdByuser: userId});
 
 findCommentByGif = (gifId) => {
     return commentModel.find({gif: gifId})
