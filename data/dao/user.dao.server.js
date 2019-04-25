@@ -10,9 +10,19 @@ deleteUser = (userId) => userModel.remove({_id:userId}).catch((e)=> e.errmsg);
 
 findAllUsers = () => userModel.find();
 
-findUsersById = (studentId) => userModel.findById(studentId);
+findUsersById = (userId) => userModel.findById(userId);
 
-findUsersByUsername = (username) => userModel.findOne({username: username});
+findUsersByEmail = (email) =>
+{
+    // console.log("from DB -->", userModel.findOne({email: email}));
+    return userModel.findOne({email: email}).catch(e => e.errmsg);
+};
+
+findUsersByUsername = (username) =>
+{
+    // console.log("dao-->", username);
+    return userModel.findOne({username: username}).catch(e => e.errmsg);
+};
 
 populateUsersSchema = () => {
 
@@ -48,5 +58,6 @@ module.exports = {
     findUsersById,
     findAllUsers,
     populateUsersSchema,
-    findUsersByUsername
+    findUsersByUsername,
+    findUsersByEmail
 };
