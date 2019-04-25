@@ -17,9 +17,11 @@ server.use(session({
         secret: 'any string',
 
     }));
+// https://wbdv-sp19-gif-art-client.herokuapp.com
+// http://localhost:4200
 
 server.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+    res.setHeader("Access-Control-Allow-Origin", "https://wbdv-sp19-gif-art-client.herokuapp.com");
     res.setHeader(
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -34,6 +36,6 @@ server.use((req, res, next) => {
 userService(server);
 gifService(server);
 commentService(server);
-server.listen(4000);
+server.listen(process.env.PORT || 4000);
 
 module.exports = server;

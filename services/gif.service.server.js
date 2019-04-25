@@ -14,6 +14,37 @@ module.exports = app => {
         dao.findGifById(gifId).then(gif => res.send(gif))
     });
 
+    //find gifs created
+    app.get('/api/created', (req,res)=> {
+        const userId = req.session.user._id;
+        if(userId){
+            dao.findMyGifs(userId).then(result => res.send(result));
+        }
+        else{
+            res.status(403).send({
+                success: false,
+                message: "You are not a user or have been logged out."
+            })
+        }
+    });
+
+    //find gifs created by a user
+    app.get('/api/created/:id', (req,res)=> {
+        const userId = req.params.id;
+        dao.findMyGifs(userId).then( result => {
+            if(result){
+                res.send(result);
+            }
+            else{
+                res.status(403).send({
+                    success: false,
+                    message: "the provided user either does not exist or has not created any gifs"
+                })
+            }
+        })
+
+    })
+
     //create GIF
     app.post('/api/gif', (req,res) =>{
         const gif = req.body;
@@ -24,7 +55,7 @@ module.exports = app => {
         else {
             res.status(403).send({
                 success: false,
-                message: "Only content creators can create gifs."
+                message: "Only content creators or admins can create gifs."
             })
         }
     });
@@ -33,7 +64,19 @@ module.exports = app => {
     app.put('/api/gif/:gifId', (req,res)=>{
         const gifId = req.params.gifId;
         const gif = req.body;
-        dao.updateGif(gifId,gif).then(status => res.send(status))
+        var createdBy = '';
+        dao.findGifById(gifId).then(result => {
+            createdBy = result.createdBy;
+            if((req.session.user.role === 'CONTENTCREATOR' && req.session.user._id === createdBy) || req.session.user.role === 'ADMIN') {
+                dao.updateGif(gifId,gif).then(status => res.send(status))
+            }
+            else {
+                res.status(403).send({
+                    success: false,
+                    message: "Only content creators or admins can update gifs."
+                })
+            }
+        })
     });
 
     //Delete Gif
@@ -42,16 +85,16 @@ module.exports = app => {
         var createdById = '';
         dao.findGifById(gifId).then(result => {
             createdById = result.createdBy;
-            if( createdById.toString() === req.session.user._id.toString() || (req.session.user.role === 'ADMIN')) {
+            // if( createdById.toString() === req.session.user._id.toString() || (req.session.user.role === 'ADMIN')) {
                 dao.deleteGif(gifId).then(status => res.send(status));
-            }
-            else {
-                res.status(403).send({
-                    success: false,
-                    message: "You can only delete your own gifs.."
-                })
-            }
+            // }
+            // else {
+            //     res.status(403).send({
+            //         success: false,
+            //         message: "You can only delete your own gifs.."
+            //     })
+            // }
         });
-    })
+    });
 
 };

@@ -4,6 +4,7 @@
   "description": "Express server",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kashif, Meesam, Saikat",
@@ -13,8 +14,11 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
     "mongoose": "^5.5.0",
     "mongoose-unique-validator": "^2.0.2",
-    "nodemailer": "^6.1.1"
+    "nodemailer": "^6.1.1",
+    "request": "^2.88.0",
+    "store": "^2.0.12"
   }
 }
