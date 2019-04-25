@@ -3,8 +3,11 @@ const dao = require('../data/dao/user.dao.server');
 const gifdao = require('../data/dao/gif.dao.server');
 let middleware = require('../middleware/middleware');
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
+
 const request = require('request');
 var store = require('store');
+
 module.exports = app => {
 
 
@@ -240,12 +243,51 @@ module.exports = app => {
         dao.createUser(user).then(user => res.send(user))
     });
 
+    //find user by email
+    app.get("/api/email/:email", (req, res) => {
+        const email= req.params.email;
+        // console.log("--> "+email);
+        dao.findUserByEmail(email).then( user => {
+            if (user) {
+                // console.log("user -> ", user);
+                res.status(200).send({
+                    success: true,
+                    message: "user found",
+                    user : user
+                                     })
+            } else {
+                res.status(404).send({
+                                         success: false,
+                                         message: "user not found"
+                                     })
+            }
+
+        })
+    });
+
+    //find user by username
+    app.get("/api/username/:username", (req, res) => {
+        const username= req.params.username;
+        // console.log("--> "+username);
+       dao.findUsersByUsername(username).then( user => {
+           if (user) {
+               res.send(user)
+           } else {
+               res.status(403).send({
+                   success: false,
+                   message: "user not found"
+                                    })
+           }
+
+       })
+    });
+
     app.put('/api/user/:id', (req, res) => {
         const user = req.body;
         const userId = req.params.id;
         dao.updateUser(userId, user).then(status => {
             if(status.nModified >= 1){
-                dao.findUsersById(userId).then(updated=> {
+                dao.findUsersById(userId).then(updated => {
                     req.session['user'] = updated;
                     res.send(status);
                 })
@@ -358,5 +400,65 @@ module.exports = app => {
                      success: true,
                      message: 'Index page'
                  });
-    })
-} ;
+    });
+
+    //Reset Password
+    app.post('/api/resetpassword', (req, res) => {
+
+        const randPassword = Math.random().toString(36).slice(2);
+        const user = req.body;
+        user.password = randPassword;
+        dao.updateUser(user._id, user).then(
+           status => {
+               if (status.nModified === 1) {
+                   // this.sendMail(user.email, user.password);
+                   res.status(200).send({
+                       success: true,
+                       Message: "Successfully reset password",
+                       email: user.email,
+                       password: user.password
+                                        })
+               } else {
+                   res.status(404).send({
+                                            success: false,
+                                            Message: "Could not reset password"
+                                        })
+               }
+           }
+       )
+
+    });
+
+    app.post('/api/sendemail', (req,res) => {
+        var emailId = req.body.email;
+        var password = req.body.password;
+
+        console.log(req.body);
+
+        let transporter = nodemailer.createTransport({
+                                                         service: 'gmail',
+                                                         auth: {
+                                                             user: "gifhyart@gmail.com",
+                                                             pass: "KKMS1234"
+                                                         }
+                                                     });
+
+        let mailOptions = {
+            from: '"Giphy Art" <gifhyart@gmail.com>', // sender address
+            to: emailId, // list of receivers
+            subject: 'Forgot password', // Subject line
+            text: 'Hello, \n \n You\'re receiving this email because you attempted to reset your password. The new password for your account against ' + emailId + ' ' + 'is' + ' ' + password, // plain text body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            re('Message sent: %s', info.messageId);
+        });
+
+    });
+};
+
+
