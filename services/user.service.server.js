@@ -344,6 +344,7 @@ module.exports = app => {
     //Login
     app.post('/login', login);
 
+    //Social Login
     app.get('/login/google', googleLogin);
 
     //Logout

@@ -12,7 +12,6 @@ const userSchema = mongoose.Schema({
                                           role: { type:String,
                                                    enum:['ADMIN', 'COMMONUSER','CONTENTCREATOR'],
                                                     default: 'COMMONUSER'}
-                                          // comments: []
                                       }, {collections: 'users'});
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 module.exports = userSchema;
