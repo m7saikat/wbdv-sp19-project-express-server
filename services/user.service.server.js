@@ -433,8 +433,6 @@ module.exports = app => {
         var emailId = req.body.email;
         var password = req.body.password;
 
-        console.log(req.body);
-
         let transporter = nodemailer.createTransport({
                                                          service: 'gmail',
                                                          auth: {
@@ -455,7 +453,10 @@ module.exports = app => {
             if (error) {
                 return console.log(error);
             }
-            re('Message sent: %s', info.messageId);
+            // re('Message sent: %s', info.messageId);
+            res.send({
+                'message': 'Email sent'
+            });
         });
 
     });

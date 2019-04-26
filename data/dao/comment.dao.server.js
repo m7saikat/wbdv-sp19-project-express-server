@@ -18,7 +18,7 @@ findCommentBYId = (commentId) => commentModel.findById(commentId);
 
 
 deleteComment = (commentId) => {
-  return commentModel.deleteOne()
+  return commentModel.remove({_id: commentId});
 };
 
 editComment = (commentId, comment) => {

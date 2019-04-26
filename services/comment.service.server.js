@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 module.exports = app => {
 
     // Get comment by user and gif
-    app.get('/api/comment/:gifId',(req,res)=>{
+    app.get('/api/comment/gif/:gifId',(req,res)=>{
         const gifId = req.params.gifId;
         const userId = req.session.user._id;
         if (userId) {
@@ -72,18 +72,18 @@ module.exports = app => {
     //Edit comment
     app.put('/api/comment/', (req, res) => {
         const userId = req.session.user._id.toString();
-        const comment = req.body.comment;
+        const commenttext = req.body.comment;
         const commentId = req.body.commentId;
-        gifId = comment.gifId;
         dao.findCommentBYId(commentId).then(commentResult => {
             if(commentResult){
                 if((userId === commentResult.createdByuser.toString())|| (req.session.user.role === 'ADMIN')) {
+                    const comment = {
+                        'text':commenttext
+                    }
                     dao.editComment(commentId, comment).then(
                         status => {
                             if (status.nModified >=1 ) {
-                                dao.findCommentByUserAndGif(gifId,userId).then(
-                                    comment => res.send(comment)
-                                )
+                                dao.findCommentBYId(commentId).then(result => res.send(result))
                             }
                             else{
                                 res.status(404).send({
@@ -104,12 +104,31 @@ module.exports = app => {
         })
     });
 
+    //Get comment by Id
+    app.get('/api/comment/:commentId', (req,res)=> {
+        console.log(' comment by id')
+        dao.findCommentBYId(req.params.commentId).then(comment => {
+            console.log(comment)
+            if(comment){
+                res.send(comment);
+            }
+            else {
+                res.status(404).send({
+                    success: false,
+                    message: "No comment found with the given id."
+                })
+            }
+        })
+    });
+
     //Delete Comment
     app.del('/api/comment', (req,res)=> {
         const commentId = req.body.commentId;
         const userId = req.session.user._id;
+        console.log('Comment ID', commentId);
 
         dao.findCommentBYId(commentId).then(comment => {
+            console.log('===>', comment);
             if(comment){
                 if((comment.createdByuser.toString() === userId.toString())|| (req.session.user.role === 'ADMIN')){
                     dao.deleteComment(commentId).then(result => res.send(result));
